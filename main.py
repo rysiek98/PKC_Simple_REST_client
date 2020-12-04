@@ -11,12 +11,9 @@ def availableExchanges():
     url = "https://stockserver.azurewebsites.net/api/stockexchanges"
     response = requests.get(url)
     response.encoding = "utf-8"
-    # exchanges = response.text.replace('"','')
-    # exchanges = exchanges.replace('[','')
-    # exchanges = exchanges.replace(']', '')
-    # exchanges = exchanges.split(',')
     exchanges = customData(response.text)
     print(exchanges)
+    return exchanges
 
 def clientAccount(username, password):
     url = "https://stockserver.azurewebsites.net/api/client"
@@ -28,22 +25,34 @@ def clientAccount(username, password):
     shares = object['shares']
     print('Name: '+name+" funds: "+str(funds)+" shares: "+str(shares))
 
-def availableCompanies(exchanges):
-    url = f"https://stockserver.azurewebsites.net/api/shareslist/{exchanges}"
+def availableCompanies(exchange):
+    url = f"https://stockserver.azurewebsites.net/api/shareslist/{exchange}"
     response = requests.get(url)
     response.encoding = "utf-8"
-    # companies = response.text.replace('"', '')
-    # companies = companies.replace('[', '')
-    # companies = companies.replace(']', '')
-    # companies = companies.split(',')
     companies = customData(response.text)
     print(companies)
+    return companies
 
-def companyPrice(exchanges, company):
+def companyBuyPrice(exchange, company):
+    url = f"https://stockserver.azurewebsites.net/api/shareprice/{exchange}?share={company}"
+    response = requests.get(url)
+    response.encoding = "utf-8"
+    object = response.json()
+    time = object[0]['time']
+    price = object[0]['price']
+    amount = object[0]['amount']
+    print('Time: ' + time + " price to buy: " + str(price) + " amount: " + str(amount))
+    return price
+
+def companySellPrice(exchanges, company):
     url = f"https://stockserver.azurewebsites.net/api/shareprice/{exchanges}?share={company}"
     response = requests.get(url)
     response.encoding = "utf-8"
-    print(response.text)
+    object = response.json()
+    time = object[1]['time']
+    price = object[1]['price']
+    amount = object[1]['amount']
+    print('Time: ' + time + " price to sell: " + str(price) + " amount: " + str(amount))
 
 def buyStocks(exchanges, company, amount, price, username, password):
     url = "https://stockserver.azurewebsites.net/api/buyoffer"
@@ -80,4 +89,12 @@ if __name__ == '__main__':
     availableExchanges()
     clientAccount("01143836@pw.edu.pl","TajneHaslo123")
     availableCompanies("Warszawa")
-    companyPrice("Warszawa", "11BIT")
+    companyBuyPrice("Warszawa", "11BIT")
+
+    #Punk 3.1
+    #exchanges = availableExchanges()
+    #company = availableCompanies(exchanges[0])
+    #price = companyBuyPrice(exchanges[0], company[0])
+    #buyStocks(exchanges[0], company[0], 1, price, "01143836@pw.edu.pl", "TajneHaslo123")
+
+    #Punkt 3.2
