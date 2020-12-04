@@ -11,7 +11,12 @@ def availableExchanges():
     url = "https://stockserver.azurewebsites.net/api/stockexchanges"
     response = requests.get(url)
     response.encoding = "utf-8"
-    print(response.text)
+    # exchanges = response.text.replace('"','')
+    # exchanges = exchanges.replace('[','')
+    # exchanges = exchanges.replace(']', '')
+    # exchanges = exchanges.split(',')
+    exchanges = customData(response.text)
+    print(exchanges)
 
 def clientAccount(username, password):
     url = "https://stockserver.azurewebsites.net/api/client"
@@ -27,7 +32,12 @@ def availableCompanies(exchanges):
     url = f"https://stockserver.azurewebsites.net/api/shareslist/{exchanges}"
     response = requests.get(url)
     response.encoding = "utf-8"
-    print(response.text)
+    # companies = response.text.replace('"', '')
+    # companies = companies.replace('[', '')
+    # companies = companies.replace(']', '')
+    # companies = companies.split(',')
+    companies = customData(response.text)
+    print(companies)
 
 def companyPrice(exchanges, company):
     url = f"https://stockserver.azurewebsites.net/api/shareprice/{exchanges}?share={company}"
@@ -58,6 +68,13 @@ def sellStocks(exchanges, company, amount,price, username, password):
     response = requests.post(url, data, auth=HTTPBasicAuth(username, password))
     response.encoding = "utf-8"
     print(response.text)
+
+def customData(data):
+    data = data.replace('"', '')
+    data = data.replace('[', '')
+    data = data.replace(']', '')
+    data = data.split(',')
+    return data
 
 if __name__ == '__main__':
     availableExchanges()
